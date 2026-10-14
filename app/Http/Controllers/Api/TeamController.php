@@ -12,6 +12,7 @@ class TeamController extends Controller
     public function index()
     {
         $teams = Team::with('players')->get();
+        
 
         return response()->json([
             'message' => 'แสดงข้อมูลทีมทั้งหมด',
