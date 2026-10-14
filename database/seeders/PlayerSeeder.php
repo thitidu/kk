@@ -2,126 +2,60 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Player;
+use App\Models\Team;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class PlayerSeeder extends Seeder
 {
     public function run(): void
     {
-        // Arsenal
-        Player::create([
-            'team_id' => 1,
-            'name' => 'Bukayo Saka',
-            'position' => 'Forward',
-            'nationality' => 'England',
-            'shirt_number' => 7,
-            'age' => 25,
-        ]);
+        // Snapshot retrieved on 2026-10-13 from the official FPL bootstrap and regions APIs.
+        // Sources: fantasy.premierleague.com/api/bootstrap-static/ and /api/regions/.
+        $players = json_decode(
+            file_get_contents(__DIR__ . '/data/premier_league_2026_27_players.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
 
-        Player::create([
-            'team_id' => 1,
-            'name' => 'Martin Odegaard',
-            'position' => 'Midfielder',
-            'nationality' => 'Norway',
-            'shirt_number' => 8,
-            'age' => 27,
-        ]);
+        if (count($players) !== 220) {
+            throw new RuntimeException('The Premier League player snapshot must contain 220 players.');
+        }
 
-        Player::create([
-            'team_id' => 1,
-            'name' => 'Declan Rice',
-            'position' => 'Midfielder',
-            'nationality' => 'England',
-            'shirt_number' => 41,
-            'age' => 27,
-        ]);
+        $teams = Team::all()->keyBy('short_name');
+        $playersByTeam = collect($players)->groupBy('team_short_name');
 
+        if ($teams->count() !== 20 || $playersByTeam->count() !== 20) {
+            throw new RuntimeException('The player snapshot must match all 20 Premier League clubs.');
+        }
 
-        // Chelsea
-        Player::create([
-            'team_id' => 2,
-            'name' => 'Cole Palmer',
-            'position' => 'Midfielder',
-            'nationality' => 'England',
-            'shirt_number' => 10,
-            'age' => 24,
-        ]);
+        DB::transaction(function () use ($teams, $playersByTeam) {
+            foreach ($playersByTeam as $shortName => $squad) {
+                $team = $teams->get($shortName);
+                if (!$team || $squad->count() !== 11) {
+                    throw new RuntimeException("The player snapshot must contain 11 players for {$shortName}.");
+                }
 
-        Player::create([
-            'team_id' => 2,
-            'name' => 'Enzo Fernandez',
-            'position' => 'Midfielder',
-            'nationality' => 'Argentina',
-            'shirt_number' => 8,
-            'age' => 25,
-        ]);
+                $names = $squad->pluck('name')->all();
+                $team->players()->whereNotIn('name', $names)->delete();
 
-        Player::create([
-            'team_id' => 2,
-            'name' => 'Reece James',
-            'position' => 'Defender',
-            'nationality' => 'England',
-            'shirt_number' => 24,
-            'age' => 26,
-        ]);
-
-
-        // Liverpool
-        Player::create([
-            'team_id' => 3,
-            'name' => 'Mohamed Salah',
-            'position' => 'Forward',
-            'nationality' => 'Egypt',
-            'shirt_number' => 11,
-            'age' => 34,
-        ]);
-
-        Player::create([
-            'team_id' => 3,
-            'name' => 'Virgil van Dijk',
-            'position' => 'Defender',
-            'nationality' => 'Netherlands',
-            'shirt_number' => 4,
-            'age' => 35,
-        ]);
-
-        Player::create([
-            'team_id' => 3,
-            'name' => 'Alisson Becker',
-            'position' => 'Goalkeeper',
-            'nationality' => 'Brazil',
-            'shirt_number' => 1,
-            'age' => 34,
-        ]);
-
-
-        // Manchester City
-        Player::create([
-            'team_id' => 4,
-            'name' => 'Erling Haaland',
-            'position' => 'Forward',
-            'nationality' => 'Norway',
-            'shirt_number' => 9,
-            'age' => 26,
-        ]);
-
-        Player::create([
-            'team_id' => 4,
-            'name' => 'Phil Foden',
-            'position' => 'Midfielder',
-            'nationality' => 'England',
-            'shirt_number' => 47,
-            'age' => 26,
-        ]);
-
-        Player::create([
-            'team_id' => 4,
-            'name' => 'Kevin De Bruyne',
-            'position' => 'Midfielder',
-            'nationality' => 'Belgium',
-            'shirt_number' => 17,
-            'age' => 35,
-        ]);
+                foreach ($squad as $player) {
+                    Player::updateOrCreate(
+                        ['team_id' => $team->id, 'name' => $player['name']],
+                        [
+                            'position' => $player['position'],
+                            'nationality' => $player['nationality'],
+                            'shirt_number' => $player['shirt_number'],
+                            'age' => $player['age'],
+                            'goals' => $player['goals'],
+                            'assists' => $player['assists'],
+                        ]
+                    );
+                }
+            }
+        });
     }
 }

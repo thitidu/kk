@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Player;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Player;
 
 class PlayerController extends Controller
 {
@@ -14,19 +14,15 @@ class PlayerController extends Controller
     {
         $query = Player::with('team');
 
-        if ($request->query('name')) {
-            $query->where(
-                'name',
-                'like',
-                '%' . $request->query('name') . '%'
-            );
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
         }
 
-        if ($request->query('position')) {
+        if ($request->filled('position')) {
             $query->where('position', $request->query('position'));
         }
 
-        if ($request->query('team_id')) {
+        if ($request->filled('team_id')) {
             $query->where('team_id', $request->query('team_id'));
         }
 
@@ -36,7 +32,7 @@ class PlayerController extends Controller
             'success' => true,
             'message' => 'ค้นหานักฟุตบอลสำเร็จ',
             'total' => $players->count(),
-            'data' => $players
+            'data' => $players,
         ], 200);
     }
 
@@ -48,14 +44,14 @@ class PlayerController extends Controller
         if (!$player) {
             return response()->json([
                 'success' => false,
-                'message' => 'ไม่พบข้อมูลนักฟุตบอล'
+                'message' => 'ไม่พบข้อมูลนักฟุตบอล',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'พบข้อมูลนักฟุตบอล',
-            'data' => $player
+            'data' => $player,
         ], 200);
     }
 
@@ -69,6 +65,8 @@ class PlayerController extends Controller
             'nationality' => $request->header('nationality'),
             'shirt_number' => $request->header('shirt_number'),
             'age' => $request->header('age'),
+            'goals' => $request->header('goals', 0),
+            'assists' => $request->header('assists', 0),
         ];
 
         $validator = Validator::make($data, [
@@ -78,13 +76,15 @@ class PlayerController extends Controller
             'nationality' => 'required|string|max:100',
             'shirt_number' => 'nullable|integer|min:1|max:99',
             'age' => 'nullable|integer|min:1|max:100',
+            'goals' => 'required|integer|min:0',
+            'assists' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'ข้อมูลนักฟุตบอลไม่ถูกต้อง',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -93,11 +93,11 @@ class PlayerController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'เพิ่มนักฟุตบอลสำเร็จ',
-            'data' => $player->load('team')
+            'data' => $player->load('team'),
         ], 201);
     }
 
-    // PUT: แก้ไขนักฟุตบอลจาก Headers
+    // PUT/PATCH: แก้ไขนักฟุตบอลจาก Headers
     public function update(Request $request, $id)
     {
         $player = Player::find($id);
@@ -105,7 +105,7 @@ class PlayerController extends Controller
         if (!$player) {
             return response()->json([
                 'success' => false,
-                'message' => 'ไม่พบข้อมูลนักฟุตบอล ID ' . $id
+                'message' => 'ไม่พบข้อมูลนักฟุตบอล ID ' . $id,
             ], 404);
         }
 
@@ -115,7 +115,9 @@ class PlayerController extends Controller
             'position',
             'nationality',
             'shirt_number',
-            'age'
+            'age',
+            'goals',
+            'assists',
         ];
 
         $data = [];
@@ -129,7 +131,7 @@ class PlayerController extends Controller
         if (empty($data)) {
             return response()->json([
                 'success' => false,
-                'message' => 'กรุณาระบุข้อมูลที่ต้องการแก้ไขใน Headers'
+                'message' => 'กรุณาระบุข้อมูลที่ต้องการแก้ไขใน Headers',
             ], 422);
         }
 
@@ -140,13 +142,15 @@ class PlayerController extends Controller
             'nationality' => 'sometimes|required|string|max:100',
             'shirt_number' => 'sometimes|nullable|integer|min:1|max:99',
             'age' => 'sometimes|nullable|integer|min:1|max:100',
+            'goals' => 'sometimes|integer|min:0',
+            'assists' => 'sometimes|integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'ข้อมูลที่แก้ไขไม่ถูกต้อง',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -155,7 +159,7 @@ class PlayerController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'แก้ไขข้อมูลนักฟุตบอลสำเร็จ',
-            'data' => $player->fresh()->load('team')
+            'data' => $player->fresh()->load('team'),
         ], 200);
     }
 
@@ -167,11 +171,10 @@ class PlayerController extends Controller
         if (!$player) {
             return response()->json([
                 'success' => false,
-                'message' => 'ไม่พบข้อมูลนักฟุตบอล ID ' . $id
+                'message' => 'ไม่พบข้อมูลนักฟุตบอล ID ' . $id,
             ], 404);
         }
 
-        // เก็บข้อมูลไว้ก่อนลบ เพื่อส่งกลับเป็น JSON
         $deletedPlayer = $player->toArray();
 
         $player->delete();
@@ -179,7 +182,7 @@ class PlayerController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'ลบนักฟุตบอลสำเร็จ',
-            'data' => $deletedPlayer
+            'data' => $deletedPlayer,
         ], 200);
     }
 }

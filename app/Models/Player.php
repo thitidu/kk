@@ -15,7 +15,9 @@ class Player extends Model
         'position',
         'nationality',
         'shirt_number',
-        'age'
+        'age',
+        'goals',
+        'assists',
     ];
 
     public function team()
