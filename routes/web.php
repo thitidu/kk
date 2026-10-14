@@ -29,48 +29,46 @@ Route::get('/news', function () {
     return view('welcome', compact('teams', 'players', 'featuredTeam', 'featuredPlayer'));
 })->name('news');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/teams', function () {
-        $standings = TeamStanding::with('team')
-            ->where('season', '2026/27')
-            ->orderByRaw('(won * 3 + drawn) DESC')
-            ->orderByRaw('(CAST(goals_for AS SIGNED) - CAST(goals_against AS SIGNED)) DESC')
-            ->orderByDesc('goals_for')
-            ->get()
-            ->keyBy('team_id');
-        $teams = Team::withCount('players')->orderBy('name')->get();
+Route::get('/teams', function () {
+    $standings = TeamStanding::with('team')
+        ->where('season', '2026/27')
+        ->orderByRaw('(won * 3 + drawn) DESC')
+        ->orderByRaw('(CAST(goals_for AS SIGNED) - CAST(goals_against AS SIGNED)) DESC')
+        ->orderByDesc('goals_for')
+        ->get()
+        ->keyBy('team_id');
+    $teams = Team::withCount('players')->orderBy('name')->get();
 
-        return view('teams.index', compact('teams', 'standings'));
-    })->name('teams.index');
+    return view('teams.index', compact('teams', 'standings'));
+})->name('teams.index');
 
-    Route::get('/players', function (Request $request) {
-        $teams = Team::orderBy('name')->get();
-        $selectedTeamId = $request->query('team_id');
-        $playersQuery = Player::with('team')->orderBy('name');
+Route::get('/players', function (Request $request) {
+    $teams = Team::orderBy('name')->get();
+    $selectedTeamId = $request->query('team_id');
+    $playersQuery = Player::with('team')->orderBy('name');
 
-        if ($selectedTeamId !== null && $selectedTeamId !== '') {
-            $playersQuery->where('team_id', $selectedTeamId);
-        }
+    if ($selectedTeamId !== null && $selectedTeamId !== '') {
+        $playersQuery->where('team_id', $selectedTeamId);
+    }
 
-        $players = $playersQuery->get();
-        $positions = Player::query()->distinct()->orderBy('position')->pluck('position');
+    $players = $playersQuery->get();
+    $positions = Player::query()->distinct()->orderBy('position')->pluck('position');
 
-        return view('players.index', compact('players', 'teams', 'selectedTeamId', 'positions'));
-    })->name('players.index');
+    return view('players.index', compact('players', 'teams', 'selectedTeamId', 'positions'));
+})->name('players.index');
 
-    Route::get('/standings', function () {
-        $standings = TeamStanding::with('team')
-            ->where('season', '2026/27')
-            ->orderByRaw('(won * 3 + drawn) DESC')
-            ->orderByRaw('(CAST(goals_for AS SIGNED) - CAST(goals_against AS SIGNED)) DESC')
-            ->orderByDesc('goals_for')
-            ->get();
-        $topScorers = Player::with('team')->orderByDesc('goals')->orderByDesc('assists')->orderBy('name')->take(10)->get();
-        $topAssists = Player::with('team')->orderByDesc('assists')->orderByDesc('goals')->orderBy('name')->take(10)->get();
+Route::get('/standings', function () {
+    $standings = TeamStanding::with('team')
+        ->where('season', '2026/27')
+        ->orderByRaw('(won * 3 + drawn) DESC')
+        ->orderByRaw('(CAST(goals_for AS SIGNED) - CAST(goals_against AS SIGNED)) DESC')
+        ->orderByDesc('goals_for')
+        ->get();
+    $topScorers = Player::with('team')->orderByDesc('goals')->orderByDesc('assists')->orderBy('name')->take(10)->get();
+    $topAssists = Player::with('team')->orderByDesc('assists')->orderByDesc('goals')->orderBy('name')->take(10)->get();
 
-        return view('standings.index', compact('standings', 'topScorers', 'topAssists'));
-    })->name('standings.index');
-});
+    return view('standings.index', compact('standings', 'topScorers', 'topAssists'));
+})->name('standings.index');
 
 Route::get('/login', function () {
     return view('auth.form', ['mode' => 'login']);
