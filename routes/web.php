@@ -4,6 +4,7 @@ use App\Models\Player;
 use App\Models\Team;
 use App\Models\TeamStanding;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,38 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('auth.form', ['mode' => 'register']);
 })->name('register');
+
+Route::post('/session/login', function (Request $request) {
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
+
+    if (! Auth::attempt($credentials)) {
+        return response()->json(['message' => 'Email หรือ Password ไม่ถูกต้อง'], 401);
+    }
+
+    $request->session()->regenerate();
+
+    $user = $request->user();
+
+    return response()->json([
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ],
+        'token' => $user->createToken('premierleague-token')->plainTextToken,
+    ]);
+})->name('session.login');
+
+Route::post('/session/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return response()->json(['success' => true]);
+})->middleware('auth')->name('session.logout');
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');

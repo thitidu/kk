@@ -15,15 +15,26 @@
 
         const values = Object.fromEntries(new FormData(form));
         const mode = form.dataset.mode;
+        const isLogin = mode === 'login';
         const headers = {
             Accept: 'application/json',
-            email: values.email,
-            password: values.password,
         };
-        if (mode === 'register') headers.name = values.name;
+        let requestOptions = { method: 'POST', headers };
+        let endpoint = `/api/${mode}`;
+
+        if (isLogin) {
+            headers['Content-Type'] = 'application/json';
+            headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
+            requestOptions.body = JSON.stringify({ email: values.email, password: values.password });
+            endpoint = '/session/login';
+        } else {
+            headers.email = values.email;
+            headers.password = values.password;
+            headers.name = values.name;
+        }
 
         try {
-            const response = await fetch(`/api/${mode}`, { method: 'POST', headers });
+            const response = await fetch(endpoint, requestOptions);
             const result = await response.json();
             if (!response.ok) throw new Error(getErrorMessage(result));
 

@@ -87,6 +87,14 @@
     async function logout() {
         try {
             await api('logout', 'POST');
+            const response = await fetch('/session/logout', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+            });
+            if (!response.ok) throw new Error('ไม่สามารถออกจากระบบได้ กรุณาลองอีกครั้ง');
             clearSession();
             closeModal(adminModal);
             showToast('ออกจากระบบเรียบร้อย');
