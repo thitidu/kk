@@ -3,8 +3,8 @@
 @include('auth.head', ['pageTitle' => 'ตารางคะแนนและสถิติ — PL HUB'])
 <body>
     <header class="site-header">
-        <a class="brand" href="{{ url('/') }}" aria-label="PL HUB หน้าแรก"><img class="brand-mark brand-logo" src="https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=256&q=80" alt="PL HUB logo" loading="eager"><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE DATABASE</small></span></a>
-        <nav class="main-nav" aria-label="เมนูหลัก"><a href="{{ route('teams.index') }}">สโมสร</a><a href="{{ route('players.index') }}">นักเตะ</a><a class="active" href="{{ route('standings.index') }}">ตารางคะแนน</a></nav>
+        <a class="brand" href="{{ route('news') }}" aria-label="PL HUB หน้าแรก"><img class="brand-mark brand-logo" src="https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=256&q=80" alt="PL HUB logo" loading="eager"><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE DATABASE</small></span></a>
+        <nav class="main-nav" aria-label="เมนูหลัก"><a href="{{ route('news') }}">ข่าวสาร</a><a class="active" href="{{ route('teams.index') }}">สโมสร</a><a href="{{ route('players.index') }}">นักเตะ</a><a href="{{ route('standings.index') }}">ตารางคะแนน</a></nav>
         <div class="header-actions"><a class="button button-outline" href="{{ route('login') }}">เข้าสู่ระบบ</a><a class="button button-dark" href="{{ route('register') }}">สมัครสมาชิก</a></div>
     </header>
 
