@@ -15,7 +15,7 @@ class PlayerController extends Controller
         $query = Player::with('team');
 
         if ($request->filled('name')) {
-            $query->where('name', 'like', 'b%' . $request->query('name') . '%');
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
         }
 
         if ($request->filled('position')) {
