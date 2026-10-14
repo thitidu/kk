@@ -17,7 +17,16 @@ Route::get('/', function () {
     $featuredPlayer = $players->first();
 
     return view('welcome', compact('teams', 'players', 'featuredTeam', 'featuredPlayer'));
-});
+})->name('home');
+
+Route::get('/news', function () {
+    $teams = Team::withCount('players')->orderBy('name')->get();
+    $players = Player::with('team')->orderBy('name')->get();
+    $featuredTeam = $teams->first();
+    $featuredPlayer = $players->first();
+
+    return view('welcome', compact('teams', 'players', 'featuredTeam', 'featuredPlayer'));
+})->name('news');
 
 Route::get('/teams', function () {
     $standings = TeamStanding::with('team')

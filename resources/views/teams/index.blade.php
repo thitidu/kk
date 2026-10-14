@@ -12,8 +12,8 @@
 </head>
 <body>
     <header class="site-header">
-        <a class="brand" href="{{ url('/') }}" aria-label="PL HUB หน้าแรก"><span class="brand-mark">PL</span><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE DATABASE</small></span></a>
-        <nav class="main-nav" aria-label="เมนูหลัก"><a class="active" href="{{ route('teams.index') }}">สโมสร</a><a href="{{ route('players.index') }}">นักเตะ</a><a href="{{ route('standings.index') }}">ตารางคะแนน</a></nav>
+        <a class="brand" href="{{ route('news') }}" aria-label="PL HUB หน้าแรก"><img class="brand-mark brand-logo" src="https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=256&q=80" alt="PL HUB logo" loading="eager"><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE DATABASE</small></span></a>
+        <nav class="main-nav" aria-label="เมนูหลัก"><a href="{{ route('news') }}">ข่าวสาร</a><a class="active" href="{{ route('teams.index') }}">สโมสร</a><a href="{{ route('players.index') }}">นักเตะ</a><a href="{{ route('standings.index') }}">ตารางคะแนน</a></nav>
         <div class="header-actions"><a class="button button-outline" href="{{ route('login') }}">เข้าสู่ระบบ</a><a class="button button-dark" href="{{ route('register') }}">สมัครสมาชิก</a></div>
     </header>
     <main class="catalog-page">
@@ -46,7 +46,7 @@
         </section>
         <p class="catalog-empty" id="catalogEmpty" hidden>ไม่พบสโมสรที่ตรงกับคำค้นหา</p>
     </main>
-    <footer class="site-footer"><a class="brand footer-brand" href="{{ url('/') }}"><span class="brand-mark">PL</span><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE DATABASE</small></span></a><span>FOOTBALL IS MORE THAN A GAME.</span><span>© {{ date('Y') }} PL HUB</span></footer>
+    <footer class="site-footer"><a class="brand footer-brand" href="{{ url('/') }}"><img class="brand-mark brand-logo" src="https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=256&q=80" alt="PL HUB logo" loading="lazy"><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE DATABASE</small></span></a><span>FOOTBALL IS MORE THAN A GAME.</span><span>© {{ date('Y') }} PL HUB</span></footer>
     <script src="{{ asset('js/catalog.js') }}" defer></script>
 </body>
 </html>

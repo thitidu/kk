@@ -3,12 +3,12 @@
 @include('auth.head', ['pageTitle' => 'ข่าวสารพรีเมียร์ลีก — PL HUB'])
 <body>
     <header class="site-header">
-        <a class="brand" href="{{ url('/') }}" aria-label="PL HUB หน้าแรก">
-            <span class="brand-mark">PL</span>
+        <a class="brand" href="{{ route('news') }}" aria-label="PL HUB หน้าแรก">
+            <img class="brand-mark brand-logo" src="https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=256&q=80" alt="PL HUB logo" loading="eager">
             <span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE NEWS & STORIES</small></span>
         </a>
         <nav class="main-nav" aria-label="เมนูหลัก">
-            <a class="active" href="{{ url('/') }}">ข่าวสาร</a>
+            <a class="active" href="{{ route('news') }}">ข่าวสาร</a>
             <a href="{{ route('teams.index') }}">สโมสร</a>
             <a href="{{ route('players.index') }}">นักเตะ</a>
             <a href="{{ route('standings.index') }}">ตารางคะแนน</a>
@@ -66,7 +66,13 @@
                 @if ($featuredPlayer)
                     <article class="story-card story-card-player">
                         <a class="story-card-link" href="{{ route('players.index', ['team_id' => $featuredPlayer->team_id]) }}">
-                            <div class="story-visual player-visual"><span class="story-visual-label">PLAYER SPOTLIGHT <b>01</b></span><span class="story-player-number">{{ str_pad($featuredPlayer->shirt_number ?? 0, 2, '0', STR_PAD_LEFT) }}</span><span class="story-orbit"></span><span class="story-visual-bottom">{{ strtoupper($featuredPlayer->team->short_name) }} <i>✳</i> {{ strtoupper($featuredPlayer->position) }}</span></div>
+                            <div class="story-visual player-visual">
+                                <img class="story-visual-image" src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=900&q=80" alt="นักเตะฟุตบอล{{ $featuredPlayer->name }}">
+                                <span class="story-visual-label">PLAYER SPOTLIGHT <b>01</b></span>
+                                <span class="story-player-number">{{ str_pad($featuredPlayer->shirt_number ?? 0, 2, '0', STR_PAD_LEFT) }}</span>
+                                <span class="story-orbit"></span>
+                                <span class="story-visual-bottom">{{ strtoupper($featuredPlayer->team->short_name) }} <i>✳</i> {{ strtoupper($featuredPlayer->position) }}</span>
+                            </div>
                             <div class="story-content"><span class="story-category">PLAYER SPOTLIGHT <span>·</span> {{ $featuredPlayer->nationality }}</span><h3>{{ $featuredPlayer->name }}<br><span>ชื่อที่แฟนบอลควรรู้จัก</span></h3><p>ทำความรู้จักนักเตะ {{ $featuredPlayer->team->name }} พร้อมดูตำแหน่งและข้อมูลในฐานข้อมูล</p><span class="story-read">ดูข้อมูลนักเตะ <b>↗</b></span></div>
                         </a>
                     </article>
@@ -74,14 +80,24 @@
                 @if ($featuredTeam)
                     <article class="story-card story-card-club">
                         <a class="story-card-link" href="{{ route('players.index', ['team_id' => $featuredTeam->id]) }}">
-                            <div class="story-visual club-visual"><span class="story-visual-label">CLUB NOTEBOOK <b>02</b></span><span class="story-club-mark">{{ strtoupper($featuredTeam->short_name) }}</span><span class="club-visual-caption">{{ $featuredTeam->city }} <i>·</i> {{ $featuredTeam->stadium }}</span></div>
+                            <div class="story-visual club-visual">
+                                <img class="story-visual-image" src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=900&q=80" alt="สนามฟุตบอล{{ $featuredTeam->name }}">
+                                <span class="story-visual-label">CLUB NOTEBOOK <b>02</b></span>
+                                <span class="story-club-mark">{{ strtoupper($featuredTeam->short_name) }}</span>
+                                <span class="club-visual-caption">{{ $featuredTeam->city }} <i>·</i> {{ $featuredTeam->stadium }}</span>
+                            </div>
                             <div class="story-content"><span class="story-category">CLUB NOTEBOOK <span>·</span> {{ $featuredTeam->city }}</span><h3>รู้จัก {{ $featuredTeam->name }}<br><span>จากสนามเหย้าสู่ทีม</span></h3><p>สำรวจข้อมูลสโมสร สนามเหย้า และรายชื่อนักเตะของทีม</p><span class="story-read">เปิดแฟ้มสโมสร <b>↗</b></span></div>
                         </a>
                     </article>
                 @endif
                 <article class="story-card story-card-league">
                     <a class="story-card-link" href="{{ route('standings.index') }}">
-                        <div class="story-visual league-visual"><span class="story-visual-label">THE LEAGUE TABLE <b>03</b></span><div class="league-graphic"><span>20</span><i>CLUBS<br>ONE LEAGUE</i></div><span class="league-visual-caption">A CLOSER LOOK AT ENGLISH FOOTBALL</span></div>
+                        <div class="story-visual league-visual">
+                            <img class="story-visual-image" src="https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=900&q=80" alt="สนามฟุตบอลพรีเมียร์ลีก">
+                            <span class="story-visual-label">THE LEAGUE TABLE <b>03</b></span>
+                            <div class="league-graphic"><span>20</span><i>CLUBS<br>ONE LEAGUE</i></div>
+                            <span class="league-visual-caption">A CLOSER LOOK AT ENGLISH FOOTBALL</span>
+                        </div>
                         <div class="story-content"><span class="story-category">THE LEAGUE GUIDE <span>·</span> STATS</span><h3>พรีเมียร์ลีก<br><span>มีเรื่องให้ติดตามเสมอ</span></h3><p>เช็กอันดับ ตารางคะแนน ดาวซัลโว และผู้นำแอสซิสต์</p><span class="story-read">ดูตารางคะแนน <b>↗</b></span></div>
                     </a>
                 </article>
@@ -95,7 +111,7 @@
         </section>
     </main>
 
-    <footer class="site-footer"><a class="brand footer-brand" href="{{ url('/') }}"><span class="brand-mark">PL</span><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE NEWS & STORIES</small></span></a><span>FOOTBALL, IN FOCUS.</span><span>© {{ date('Y') }} PL HUB</span></footer>
+    <footer class="site-footer"><a class="brand footer-brand" href="{{ url('/') }}"><img class="brand-mark brand-logo" src="https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&w=256&q=80" alt="PL HUB logo" loading="lazy"><span class="brand-name">PL <b>HUB</b><small>PREMIER LEAGUE NEWS & STORIES</small></span></a><span>FOOTBALL, IN FOCUS.</span><span>© {{ date('Y') }} PL HUB</span></footer>
 
     <div class="modal-backdrop" id="adminModal" hidden>
         <section class="modal-card admin-card" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
