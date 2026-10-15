@@ -11,12 +11,12 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        // รับข้อมูลจาก Headers
+        
         $name = $request->header('name');
         $email = $request->header('email');
         $password = $request->header('password');
 
-        // ตรวจสอบข้อมูล
+        
         if (!$name || !$email || !$password) {
             return response()->json([
                 'success' => false,
@@ -24,7 +24,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        // ตรวจสอบ Email ซ้ำ
+        
         if (User::where('email', $email)->exists()) {
             return response()->json([
                 'success' => false,
