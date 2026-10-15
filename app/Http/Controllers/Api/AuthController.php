@@ -9,9 +9,6 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // =========================
-    // REGISTER
-    // =========================
     public function register(Request $request)
     {
         // รับข้อมูลจาก Headers
