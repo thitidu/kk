@@ -3,10 +3,9 @@
 use App\Models\Player;
 use App\Models\Team;
 use App\Models\TeamStanding;
+use App\Http\Controllers\PasswordChangeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
 
@@ -114,36 +113,6 @@ Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->name('password.request');
 
-Route::post('/forgot-password', function (Request $request) {
-    $request->validate(['email' => 'required|email']);
-
-    $status = Password::sendResetLink($request->only('email'));
-
-    return $status === Password::RESET_LINK_SENT
-        ? back()->with('status', __($status))
-        : back()->withErrors(['email' => __($status)]);
-})->name('password.email');
-
-Route::get('/reset-password/{token}', function (Request $request, $token) {
-    return view('auth.reset-password', [
-        'token' => $token,
-        'email' => $request->query('email'),
-    ]);
-})->name('password.reset');
-
-Route::post('/reset-password', function (Request $request) {
-    $credentials = $request->validate([
-        'token' => 'required',
-        'email' => 'required|email',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    $status = Password::reset($credentials, function ($user, $password) {
-        $user->forceFill(['password' => Hash::make($password)])->save();
-        $user->tokens()->delete();
-    });
-
-    return $status === Password::PASSWORD_RESET
-        ? redirect('/')->with('status', __($status))
-        : back()->withErrors(['email' => [__($status)]]);
-})->name('password.update');
+Route::post('/forgot-password', [PasswordChangeController::class, 'update'])
+    ->middleware('throttle:5,1')
+    ->name('password.update');

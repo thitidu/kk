@@ -15,6 +15,9 @@
             @if (request()->boolean('registered'))
                 <p class="recovery-status" role="status">สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบด้วยบัญชีที่สร้างไว้</p>
             @endif
+            @if ($mode === 'login' && session('status'))
+                <p class="recovery-status" role="status">{{ session('status') }}</p>
+            @endif
             <form id="authPageForm" data-mode="{{ $mode }}">
                 @csrf
                 @if ($mode === 'register')

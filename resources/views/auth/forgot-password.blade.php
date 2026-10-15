@@ -10,17 +10,20 @@
         <section class="modal-card auth-card recovery-card">
             <span class="eyebrow section-eyebrow">ACCOUNT RECOVERY</span>
             <h1>ลืมรหัสผ่าน<span class="lime-dot">.</span></h1>
-            <p class="modal-description">กรอกอีเมลที่ใช้สมัครสมาชิก เราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ให้คุณ</p>
+            <p class="modal-description">กรอกอีเมลของบัญชีและตั้งรหัสผ่านใหม่ได้ทันที โดยไม่ต้องใช้ลิงก์จากอีเมล</p>
+            <p class="form-error" role="note">คำเตือน: ผู้ที่ทราบอีเมลบัญชีนี้สามารถเปลี่ยนรหัสผ่านได้</p>
             @if (session('status'))
                 <p class="recovery-status" role="status">{{ session('status') }}</p>
             @endif
             @if ($errors->any())
                 <p class="form-error" role="alert">{{ $errors->first() }}</p>
             @endif
-            <form method="POST" action="{{ route('password.email') }}">
+            <form method="POST" action="{{ route('password.update') }}">
                 @csrf
                 <label class="form-field"><span>อีเมล</span><input name="email" type="email" value="{{ old('email') }}" autocomplete="email" required autofocus placeholder="you@example.com"></label>
-                <button class="button button-dark submit-button" type="submit">ส่งลิงก์ตั้งรหัสผ่าน <span aria-hidden="true">↗</span></button>
+                <label class="form-field"><span>รหัสผ่านใหม่</span><input name="password" type="password" autocomplete="new-password" required minlength="8" placeholder="อย่างน้อย 8 ตัวอักษร"></label>
+                <label class="form-field"><span>ยืนยันรหัสผ่านใหม่</span><input name="password_confirmation" type="password" autocomplete="new-password" required minlength="8"></label>
+                <button class="button button-dark submit-button" type="submit">เปลี่ยนรหัสผ่าน <span aria-hidden="true">↗</span></button>
             </form>
             <a class="forgot-link" href="{{ url('/') }}">กลับไปหน้าเข้าสู่ระบบ</a>
         </section>
