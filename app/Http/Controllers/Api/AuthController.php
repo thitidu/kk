@@ -42,11 +42,7 @@ class AuthController extends Controller
             'password' => Hash::make($password)
         ]);
 
-        // สร้าง Token
-        $token = $user->createToken(
-            'premierleague-token'
-        )->plainTextToken;
-
+        
         return response()->json([
             'success' => true,
             'message' => 'สมัครสมาชิกสำเร็จ',
@@ -55,8 +51,7 @@ class AuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email
-                ],
-                'token' => $token
+                ]
             ]
         ], 201);
     }
@@ -95,18 +90,18 @@ class AuthController extends Controller
             'premierleague-token'
         )->plainTextToken;
 
-       return response()->json([
-    'success' => true,
-    'message' => 'Login สำเร็จ',
+        return response()->json([
+            'success' => true,
+            'message' => 'Login สำเร็จ',
 
-    'user' => [
-        'id' => $user->id,
-        'name' => $user->name,
-        'email' => $user->email
-    ],
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email
+            ],
 
-    'token' => $token
-], 200);
+            'token' => $token
+        ], 200);
     }
 
 
