@@ -11,6 +11,7 @@ class TeamController extends Controller
     // GET /api/teams
     public function index()
     {
+        //
         // $teams = Team::with('players')->get();
          $teams = Team::all();
 
