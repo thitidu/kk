@@ -20,7 +20,7 @@
         <section class="news-hero">
             <div class="news-hero-copy">
                 <span class="news-kicker"><span class="live-dot"></span> PL HUB NEWSROOM <span class="kicker-divider">/</span> ข่าวสารพรีเมียร์ลีก</span>
-                <h1>ทุกเรื่องราว<br>ของพรีเมียร์ลีก<span>.</span></h1>
+                <h1>ทุกเรื่องราว<br>ของพรีเมียร์ลีก<span></span></h1>
                 <p>ติดตามเรื่องราวของสโมสรและนักเตะ พร้อมสำรวจข้อมูลพรีเมียร์ลีกที่คุณสนใจได้ในที่เดียว</p>
                 <div class="news-hero-actions">
                     <a class="button button-lime" href="#top-stories">อ่านเรื่องเด่น <span aria-hidden="true">↓</span></a>
